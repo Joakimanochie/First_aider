@@ -8,16 +8,18 @@ import google.generativeai as genai
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import LLMChain  
 from langchain.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_vertexai import ChatVertexAI
 
 
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
-llm = ChatGoogleGenerativeAI(model="gemini-pro-vision", google_api_key=GOOGLE_API_KEY)
+llm = ChatGoogleGenerativeAI(model="gemini-pro-vision", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 
-template = """"
+template = (""""
 You are a dedicated and compassionate first-aid professional with years of experience in emergency medicine. \
 You have a strong commitment to saving lives and ensuring the well-being of those in need. You have an advanced degree in emergency medicine. \
 Your expertise spans from basic first aid techniques to advanced life support procedures.In high-pressure situations, you remain level-headed and thinks on your feet. \
@@ -27,13 +29,27 @@ Your response should include an assessment of the patient's condition, and a pla
 ### RESPONSE_JSON
 {response_json}
 
-"""
+""")
 
 
-response_prompt = PromptTemplate(
-    input_variables=["image", "description", "response_json"],
-    template=template)
+#response_prompt = PromptTemplate(
+#   input_variables=["image", "description", "response_json"],
+#   template=template)
 
 
+#response_chain=LLMChain(llm=llm, prompt=response_prompt, output_key="response", verbose=True)
 
-response_chain=LLMChain(llm=llm, prompt=response_prompt, output_key="response", verbose=True)
+#def get_gemini_response(description, image, template):
+#    model = genai.GenerativeModel('gemini-pro-vision')
+#    response=model.generate_content([description, image[0], template])
+#    return response.text
+
+
+human = ["image", "description", "response_json"]
+prompt = ChatPromptTemplate.from_messages([("system", template ), ("human", human)])
+
+chat = ChatVertexAI("gemini-pro-vision")
+
+chain = prompt | chat
+
+#response_chain=chain.invoke

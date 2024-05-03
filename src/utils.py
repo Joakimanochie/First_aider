@@ -4,7 +4,7 @@ def input_image_setup(uploaded_file):
 
         image_parts = [
             {
-                "mine_type": uploaded_file.type,
+                "mime_type": uploaded_file.type,
                 "data": bytes_data
             }
         ]

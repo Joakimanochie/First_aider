@@ -1,9 +1,12 @@
 google-generativeai
-streamlit
+streamlit==1.28.2
 python-dotenv
 PyPDF2
-langchain
+#langchain
 pinecone-client
+langchain==0.0.225
 flask
 langchain_google_genai
+langchain-google-vertexai
+langchain_core
 -e .
