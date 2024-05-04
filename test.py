@@ -1,4 +1,3 @@
-### Health Management APP
 from dotenv import load_dotenv
 
 load_dotenv() ## load all the environment variables
@@ -15,7 +14,11 @@ genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 ## Function to load Google Gemini Pro Vision API And get response
 
 def get_gemini_repsonse(input,image,prompt):
-    model=genai.GenerativeModel('gemini-pro-vision')
+    model=genai.GenerativeModel('gemini-pro-vision', safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"}])
     response=model.generate_content([input,image[0],prompt])
     return response.text
 
@@ -73,6 +76,12 @@ follow this format
 if submit:
     image_data=input_image_setup(uploaded_file)
     response=get_gemini_repsonse(input_prompt,image_data,input)
+    if response.prompt_feedback.is_blocked:
+        print("The prompt was blocked.")
+        print("Reason: ", response.prompt_feedback.block_reason)
+    else:
+        print("The prompt was not blocked.")
+        print(response.prompt_feedback)
     st.subheader("Response ")
     st.write(response)
 
