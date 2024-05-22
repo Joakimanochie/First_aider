@@ -76,12 +76,7 @@ follow this format
 if submit:
     image_data=input_image_setup(uploaded_file)
     response=get_gemini_repsonse(input_prompt,image_data,input)
-    if response.prompt_feedback.is_blocked:
-        print("The prompt was blocked.")
-        print("Reason: ", response.prompt_feedback.block_reason)
-    else:
-        print("The prompt was not blocked.")
-        print(response.prompt_feedback)
+
     st.subheader("Response ")
     st.write(response)
 

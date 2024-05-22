@@ -9,4 +9,5 @@ flask
 langchain_google_genai
 langchain-google-vertexai
 langchain_core
+anthropic
 -e .
