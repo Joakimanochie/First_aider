@@ -6,6 +6,7 @@ import streamlit as st
 import os
 import google.generativeai as genai
 from PIL import Image
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
@@ -14,12 +15,11 @@ genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 ## Function to load Google Gemini Pro Vision API And get response
 
 def get_gemini_repsonse(input,image,prompt):
-    model=genai.GenerativeModel('gemini-pro-vision', safety_settings = [
-    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"}])
-    response=model.generate_content([input,image[0],prompt])
+    model=genai.GenerativeModel('gemini-pro-vision')
+    response=model.generate_content([input,image[0],prompt], safety_settings={HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                                                                               HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE, 
+                                                                                 HarmCategory.HARM_CATEGORY_MEDICAL: HarmBlockThreshold.BLOCK_NONE,
+                                                                                 HarmCategory.HARM_CATEGORY_VIOLENCE: HarmBlockThreshold.BLOCK_NONE})
     return response.text
 
 def input_image_setup(uploaded_file):
